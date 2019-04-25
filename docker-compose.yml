@@ -1,0 +1,38 @@
+version: '3'
+services:
+  mysql:
+    container_name: mysql_comp_test
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=test
+      - MYSQL_USER=docker
+      - MYSQL_PASSWORD=docker
+      - TZ=Asia/Tokyo
+    volumes:
+      - db:/var/lib/mysql
+  phpmyadmin:
+      container_name: phpmyadmin_comp_test
+      image: phpmyadmin/phpmyadmin
+      environment:
+        - PMA_ARBITRARY=1
+        - PMA_HOST=mysql
+        - PMA_USER=root
+        - PMA_PASSWORD=root
+      links:
+        - mysql
+      ports:
+        - 4040:80
+      volumes:
+      - ./phpmyadmin/sessions:/sessions
+  php:
+    container_name: php_apache_comp_test
+    build: ./php
+    ports:
+      - 8080:80
+    volumes:
+      - ./html:/var/www/html
+    depends_on:
+      - mysql
+volumes:
+  db:
